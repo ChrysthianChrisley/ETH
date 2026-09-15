@@ -1,0 +1,13 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {calculate,periods,dayKey} from '../ledger.js';
+const buy=(over={})=>({id:'b1',type:'buy',date:'2026-09-01T12:00:00Z',qty:2,price:2000,fee:4,feeAsset:'USD',bnbPrice:0,lotId:'',note:'',...over});
+const sell=(over={})=>({id:'s1',type:'sell',date:'2026-09-02T12:00:00Z',qty:1,price:2200,fee:2.2,feeAsset:'USD',bnbPrice:0,lotId:'b1',note:'',...over});
+const close=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
+test('partial sell allocates entry fees and retains basis',()=>{const r=calculate([buy(),sell()]);close(r.realized,195.8);close(r.cost,2002);close(r.qty,1);});
+test('multiple lots: selected lot used, not FIFO',()=>{const r=calculate([buy(),buy({id:'b2',price:1800,fee:3.6}),sell({lotId:'b2'})]);close(r.realized,396);close(r.lots[0].remaining,2);});
+test('ETH fee reduces acquired quantity without double counting',()=>{const r=calculate([buy({feeAsset:'ETH',fee:.002})]);close(r.qty,1.998);close(r.cost,4000);close(r.fees,4);});
+test('ETH fee on sale consumes additional inventory',()=>{const r=calculate([buy(),sell({feeAsset:'ETH',fee:.001})]);close(r.qty,.999);close(r.realized,2200-1.001*2002);});
+test('BNB fee uses historical USD conversion',()=>{const r=calculate([buy({feeAsset:'BNB',fee:.01,bnbPrice:600}),sell({feeAsset:'BNB',fee:.003,bnbPrice:700})]);close(r.realized,194.9);close(r.fees,8.1);});
+test('oversell and earlier sell rejected',()=>{assert.throws(()=>calculate([buy(),sell({qty:3})]));assert.throws(()=>calculate([buy(),sell({date:'2026-08-01T12:00:00Z'})]));});
+test('invalid and duplicate data rejected',()=>{assert.throws(()=>calculate([buy({qty:NaN})]));assert.throws(()=>calculate([buy(),buy()]));assert.throws(()=>calculate([buy({feeAsset:'BNB',bnbPrice:0})]));});
+test('full sale retains zero and handles loss',()=>{const r=calculate([buy(),sell({qty:2,price:1900,fee:3.8})]);close(r.qty,0);close(r.cost,0);close(r.realized,-207.8);});
+test('Brasilia calendar boundaries and Monday week',()=>{assert.equal(dayKey('2026-09-15T02:00:00Z'),'2026-09-14');const p=periods([{date:'2026-09-14T02:00:00Z',profit:10},{date:'2026-09-14T12:00:00Z',profit:20},{date:'2026-09-15T12:00:00Z',profit:-5},{date:'2025-09-15T12:00:00Z',profit:100}],new Date('2026-09-15T14:00:00Z'));assert.deepEqual(p,{total:125,day:-5,week:15,month:25,year:25});});
