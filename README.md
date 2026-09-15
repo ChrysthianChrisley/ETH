@@ -45,3 +45,11 @@ Valores do registro são USD. Se o extrato estiver em USDT, informe o equivalent
 ## Publicar no GitHub Pages
 
 Em **Settings → Pages**, escolha **Deploy from a branch**, branch **main**, pasta **/(root)**. O `.nojekyll` permite servir os arquivos estáticos diretamente. Nunca inclua tokens ou backups financeiros nos commits.
+
+## Atualização: mercado e conciliação
+
+A base de cálculo é USDT, a moeda dos pares da Binance. Os equivalentes USD e BRL usam cotações atuais; não são conversões históricas nem apuração fiscal. ETH/USDT e USDT/BRL vêm da Binance por WebSocket, com consulta REST a cada 15 segundos como recuperação. USDT/USD vem da Coinbase, consultado a cada minuto. Cotações vencidas deixam de alimentar conversões e são sinalizadas. Nenhuma chave Binance é necessária.
+
+Compras sugerem taxa em ETH e vendas em USDT; confira sempre a moeda real e o valor no extrato. O status de taxa estimada fica registrado na nota e aparece como resultado provisório. O histórico de ordens não comprova comissões. O botão Conferir Binance compara um CSV local sem enviá-lo a servidores. O formulário permite distribuir uma venda entre vários lotes por ordem de compra (FIFO).
+
+Para atualizar a integração existente, substitua Code.gs, execute setup para atualizar os cabeçalhos para USDT e atualize a implantação existente para uma nova versão. A URL e a chave permanecem iguais. O site preserva backup local quando adota uma correção de um registro já sincronizado. Dados financeiros pessoais e relatórios de conciliação não são incluídos no repositório.
