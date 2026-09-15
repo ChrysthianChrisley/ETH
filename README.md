@@ -5,7 +5,7 @@ Controle pessoal de operações Spot em Ethereum, em português, feito com HTML,
 ## Recursos
 
 - Compras independentes e vendas parciais vinculadas ao lote escolhido.
-- Taxas reais em USD, ETH ou BNB, com cotação histórica do BNB.
+- Taxas registradas em USDT, ETH ou BNB, com cotação histórica do BNB na moeda de cálculo.
 - Lucro líquido total, diário, semanal, mensal e anual em horário de Brasília.
 - Posições abertas, custo médio, capital alocado, resultado não realizado e gráfico acumulado.
 - Histórico, pesquisa, CSV e backup/restauração JSON sem sobrescrever registros.
@@ -34,13 +34,13 @@ O resumo da planilha é recalculado a cada sincronização; o painel calcula os 
 
 ## Cálculo
 
-Compra com taxa em USD/BNB: custo = quantidade × preço + taxa em USD. Compra com taxa em ETH: quantidade disponível = quantidade executada − taxa; custo = valor bruto, evitando contar a taxa duas vezes.
+Compra com taxa em USDT/BNB: custo = quantidade × preço + taxa em USDT. Compra com taxa em ETH: quantidade disponível = quantidade executada − taxa; custo = valor bruto, evitando contar a taxa duas vezes.
 
 Venda: lucro = receita líquida − custo proporcional da quantidade consumida do lote. Taxa de venda em ETH consome saldo adicional. Valorização em aberto usa a cotação de referência e não inclui uma futura taxa de saída. O sistema registra execuções já feitas; não envia ordens à Binance.
 
 Padrão Binance Spot regular: 0,10% por execução; com desconto BNB, 0,075%. Pode variar por par, promoção e nível VIP. Confira seu extrato. Fonte consultada em 15/09/2026: https://www.binance.com/en/fee/trading
 
-Valores do registro são USD. Se o extrato estiver em USDT, informe o equivalente em USD; não há conversão implícita. Cotação opcional: Coinbase ETH/USD, com fallback manual.
+Valores do registro são USDT. Compras realizadas em BRL precisam de conversão histórica para a base USDT, documentada na nota; não use a cotação atual para alterar custos históricos. Cotação opcional: Binance ETH/USDT e USDT/BRL, com referência USDT/USD da Coinbase.
 
 ## Publicar no GitHub Pages
 
